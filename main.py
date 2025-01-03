@@ -1,5 +1,5 @@
 import tkinter
-import random
+from random import randint
 import os
 
 
@@ -44,6 +44,7 @@ window.geometry(f"{window_width}x{window_height}+{window_x}+{window_y}")
 
 
 snake = Tile(5*TILE_SIZE, 5*TILE_SIZE)
+snake_body = []
 food = Tile(10*TILE_SIZE, 10*TILE_SIZE)
 
 velocityX = 0
@@ -88,10 +89,34 @@ def draw():
         fill='lime green'
     )
 
+    for tile in snake_body:
+        canvas.create_rectangle(
+            tile.x,
+            tile.y,
+            tile.x + TILE_SIZE,
+            tile.y + TILE_SIZE,
+            fill = 'lime green'
+        )
+
     window.after(100, draw)
 
 def move():
     global snake
+
+    if snake.x == food.x and snake.y == food.y:
+        snake_body.append(Tile(food.x, food.y))
+        food.x = randint(0, COLS - 1) * TILE_SIZE
+        food.y = randint(0, ROWS - 1) * TILE_SIZE
+
+    for i in range(len(snake_body) - 1, -1, -1):
+        tile = snake_body[i]
+        if i == 0:
+            tile.x = snake.x
+            tile.y = snake.y
+        else:
+            prev_tile = snake_body[i - 1]
+            tile.x = prev_tile.x
+            tile.y = prev_tile.y
 
     snake.x += velocityX*TILE_SIZE
     snake.y += velocityY*TILE_SIZE
